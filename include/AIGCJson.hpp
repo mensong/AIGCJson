@@ -353,7 +353,7 @@ public:
         return array;
     }
 
-    static std::string StringTrim(std::string key)
+    static std::string StringTrim(const std::string& key)
     {
         std::string newStr = key;
         if (!newStr.empty())
@@ -380,7 +380,7 @@ public:
     /**
          * Get json value type
          */
-    static std::string GetJsonValueTypeName(rapidjson::Value &jsonValue)
+    static std::string GetJsonValueTypeName(const rapidjson::Value &jsonValue)
     {
         switch (jsonValue.GetType())
         {
@@ -400,7 +400,7 @@ public:
         }
     }
 
-    static std::string GetStringFromJsonValue(rapidjson::Value &jsonValue)
+    static std::string GetStringFromJsonValue(const rapidjson::Value &jsonValue)
     {
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -410,10 +410,11 @@ public:
         return ret;
     }
 
-    static std::string FindStringFromMap(std::string name, std::map<std::string, std::string> &stringMap)
+    static std::string FindStringFromMap(const std::string& name, 
+        const std::map<std::string, std::string> &stringMap)
     {
-        std::map<std::string, std::string>::iterator iter = stringMap.find(name);
-        if (iter == stringMap.end())
+        std::map<std::string, std::string>::const_iterator iter = stringMap.find(name);
+        if (iter == stringMap.cend())
             return "";
         return iter->second;
     }
@@ -424,14 +425,14 @@ public:
         * Set class/struct members value
         *
         ******************************************************/
-    std::vector<std::string> GetMembersNames(const std::string membersStr)
+    std::vector<std::string> GetMembersNames(const std::string& membersStr)
     {
         std::vector<std::string> array = StringSplit(membersStr);
         StringTrim(array);
         return array;
     }
 
-    std::map<std::string, std::string> GetMembersValueMap(const std::string valueStr)
+    std::map<std::string, std::string> GetMembersValueMap(const std::string& valueStr)
     {
         std::vector<std::string> array = StringSplit(valueStr);
         std::map<std::string, std::string> ret;
@@ -451,7 +452,8 @@ public:
     }
 
     template <typename TYPE, typename... TYPES>
-    bool SetMembers(const std::vector<std::string> &names, int index, rapidjson::Value &jsonValue, std::map<std::string, std::string> defaultValues, TYPE &arg, TYPES &...args)
+    bool SetMembers(const std::vector<std::string> &names, int index, rapidjson::Value &jsonValue, 
+        const std::map<std::string, std::string>& defaultValues, TYPE &arg, TYPES &...args)
     {
         if (!SetMembers(names, index, jsonValue, defaultValues, arg))
             return false;
@@ -460,7 +462,8 @@ public:
     }
 
     template <typename TYPE>
-    bool SetMembers(const std::vector<std::string> &names, int index, rapidjson::Value &jsonValue, std::map<std::string, std::string> defaultValues, TYPE &arg)
+    bool SetMembers(const std::vector<std::string> &names, int index, rapidjson::Value &jsonValue, 
+        const std::map<std::string, std::string>& defaultValues, TYPE &arg)
     {
         if (jsonValue.IsNull())
             return true;
@@ -490,7 +493,8 @@ public:
         *
         ******************************************************/
     template <typename TYPE, typename... TYPES>
-    bool GetMembers(const std::vector<std::string> &names, int index, rapidjson::Value &jsonValue, rapidjson::Document::AllocatorType &allocator, TYPE &arg, TYPES &...args)
+    bool GetMembers(const std::vector<std::string> &names, int index, rapidjson::Value &jsonValue, 
+        rapidjson::Document::AllocatorType &allocator, TYPE &arg, TYPES &...args)
     {
         if (!GetMembers(names, index, jsonValue, allocator, arg))
             return false;
@@ -498,7 +502,8 @@ public:
     }
 
     template <typename TYPE>
-    bool GetMembers(const std::vector<std::string> &names, int index, rapidjson::Value &jsonValue, rapidjson::Document::AllocatorType &allocator, TYPE &arg)
+    bool GetMembers(const std::vector<std::string> &names, int index, rapidjson::Value &jsonValue, 
+        rapidjson::Document::AllocatorType &allocator, TYPE &arg)
     {
         rapidjson::Value item;
         bool check = ObjectToJson(arg, item, allocator);
@@ -1065,7 +1070,7 @@ public:
          * @param message : printf err message when conver failed
          */
     template <typename T>
-    static bool JsonToObject(T &obj, const std::string &jsonStr, const std::vector<std::string> keys = {}, std::string *message = NULL)
+    static bool JsonToObject(T &obj, const std::string &jsonStr, const std::vector<std::string>& keys = {}, std::string *message = NULL)
     {
         //Parse json string
         rapidjson::Document root;
@@ -1115,7 +1120,7 @@ public:
          * @param message : printf err message when conver failed
          */
     template <typename T>
-    static T Get(const std::string &jsonStr, T defaultT, const std::vector<std::string> keys = {}, std::string *message = NULL)
+    static T Get(const std::string &jsonStr, T defaultT, const std::vector<std::string>& keys = {}, std::string *message = NULL)
     {
         T obj;
         if (JsonToObject(obj, jsonStr, keys, message))
